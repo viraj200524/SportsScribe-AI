@@ -177,7 +177,8 @@ Only use tools. Do not generate natural language explanations.
 """
 )
 
-cricket_player_analyst.print_response("Give me info of the player with ID 1413")
+if __name__ == "__main__":
+    cricket_player_analyst.print_response("Give me info of the player with ID 1413")
     
     
 

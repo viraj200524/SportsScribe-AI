@@ -1,6 +1,7 @@
 from Getting_IDs import Getting_ID_Team
 from ReportGenerator import report_writter
 from GetMatchDetails import senior_data_analyst
+from GetPlayerStats import cricket_player_analyst
 
 import os
 from dotenv import load_dotenv
@@ -15,7 +16,7 @@ google_api_key = os.getenv("GOOGLE_API_KEY")
 llm = Gemini(id="gemini-2.0-flash",api_key=google_api_key)
 
 SportsJournalistTeam = Team(
-    members = [Getting_ID_Team,senior_data_analyst,report_writter],
+    members = [Getting_ID_Team,senior_data_analyst,report_writter, cricket_player_analyst],
     name = "Sports Journalism Team",
     description = "A team of expert AI Agents who provide in-depth analysis and reporting on any Cricket matches asked by the user",
     mode="coordinate",
