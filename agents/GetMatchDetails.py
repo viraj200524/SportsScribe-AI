@@ -20,9 +20,9 @@ if not x_api_token or not x_api_host:
 goog_llm = Gemini(id="gemini-2.0-flash",api_key=os.getenv("GOOGLE_API_KEY"))
 groq_llm = Groq(id="llama3-70b-8192",api_key=os.getenv("GROQ_API_KEY"))
 
-cricket_instructions = "You are an AI-powered tool that can fetch information about any cricket match or player using all available tools."
+cricket_instructions = "You are an AI-powered tool that can fetch information about any cricket match using all available tools."
 
-class CricketTools(Toolkit):
+class CricketMatchTools(Toolkit):
     def __init__(self):
         super().__init__(
             name="Cricket Tool",
@@ -126,7 +126,7 @@ senior_data_analyst = Agent(
         "A cricket data agent that fetches raw JSON data about any cricket match using a given matchID. "
         "It can retrieve scorecards, commentary, and general match info, but does not analyze or summarize the data."
     ),
-    tools=[CricketTools(),ReasoningTools()],
+    tools=[CricketMatchTools(),ReasoningTools()],
     instructions="""
 Your job is to retrieve and return raw JSON data about cricket matches based on the matchID provided by the user.
 

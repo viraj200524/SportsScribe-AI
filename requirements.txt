@@ -2,3 +2,7 @@ agno
 dotenv
 duckduckgo-search
 groq
+agentql
+google-genai
+ollama
+langchain_agentql
