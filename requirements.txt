@@ -6,3 +6,4 @@ agentql
 google-genai
 ollama
 langchain_agentql
+huggingface_hub

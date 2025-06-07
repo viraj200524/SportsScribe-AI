@@ -1,5 +1,5 @@
 from agno.agent import Agent
-from agno.models.groq import Groq
+from agno.models.google import Gemini
 import os
 from agno.team.team import Team
 from dotenv import load_dotenv
@@ -7,13 +7,13 @@ from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.reasoning import ReasoningTools
 load_dotenv("../.env")
 
-os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
+google_api_key=os.getenv("GOOGLE_API_KEY")
 
-llm = Groq(id="llama3-70b-8192")
+model = Gemini(id=os.getenv("GOOGLE_MODEL_NAME"),api_key=google_api_key)
 
 match_id_agent = Agent(
     name="Cricbuzz MatchID Finder",
-    model=llm,
+    model=model,
     tools=[DuckDuckGoTools()],
     role="Cricbuzz Match ID Finding Agent using DuckDuckGoSearch",
     description="You are an AI agent that can find the Match ID on Cricbuzz for the match specified by the user.",
@@ -25,7 +25,7 @@ match_id_agent = Agent(
 
 player_id_agent = Agent(
     name="Cricbuzz PlayerID Finder",
-    model=llm,
+    model=model,
     tools=[DuckDuckGoTools()],
     role="Cricbuzz Player ID Finding Agent using DuckDuckGoSearch",
     description="You are an AI agent that can find the Player ID on Cricbuzz for the player specified by the user.",
@@ -39,7 +39,7 @@ Getting_ID_Team = Team(
     members=[match_id_agent, player_id_agent],
     name="Cricbuzz ID Finding Team",
     mode="coordinate",
-    model=llm,
+    model=model,
     show_tool_calls=True,
     markdown=True,
     tools=[ReasoningTools()],

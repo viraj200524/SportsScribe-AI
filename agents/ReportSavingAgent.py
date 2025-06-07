@@ -1,23 +1,24 @@
 from agno.agent import Agent
 from agno.tools import tool
-from agno.models.groq import Groq
+from agno.models.google import Gemini
 import os
 from dotenv import load_dotenv
+import markdown
 load_dotenv("../.env")
 
-os.environ["GROQ_API_KEY"]=os.getenv("GROQ_API_KEY")
+os.environ["GOOGLE_API_KEY"]
 
-saving_instructions = ["Given Some content to save, Create a file with appropiate file name in the base directory specified and write the content as it is into it, Do not make any changes to it.",
+saving_instructions = ["Given Some content, Create a file with appropiate file name in the base directory specified and write the content as it is into it and save the file, Do not make any changes to it.",
                        "Do not generate any content of your Own."
-                       "Make sure you always save reports in docx format i.e. with the extension of .docx",
-                       "If the Text contains Markdown Content, then first write it in markdown then save in .docx file"]
+                       "Make sure you always save reports in docx format i.e. with the extension of .docx"
+                       "However Long the content is, you have to strictly write it to the file and save it, and make sure no duplicate content is present."]
 
 from pathlib import Path
 
-base_dir = Path("../reports/")
+base_directory = Path("../reports/")
 
 @tool
-def write_file(filename: str, contents: str, base_dir: str) -> None:
+def write_file(filename: str, contents: str) -> None:
     """
     Check if a file exists in the base directory, overwrite it if it exists,
     or create a new file, then write the contents to it.
@@ -28,7 +29,7 @@ def write_file(filename: str, contents: str, base_dir: str) -> None:
         base_dir (str): Base directory path where the file will be saved.
     """
     # Convert base_dir to Path object
-    base_dir_path = Path(base_dir)
+    base_dir_path = Path(base_directory)
     
     # Ensure the base directory exists
     base_dir_path.mkdir(parents=True, exist_ok=True)
@@ -38,7 +39,7 @@ def write_file(filename: str, contents: str, base_dir: str) -> None:
     
     # Write contents to the file (overwrites if exists, creates if not)
     with file_path.open('w', encoding='utf-8') as f:
-        f.write(contents)
+        f.write(markdown.markdown(contents))
 
 saving_agent = Agent(
     name="Report Saving Agent",
@@ -46,6 +47,6 @@ saving_agent = Agent(
     description="Your task is to save the content given in a docx file report with appropriate name in the base directory",
     tools=[write_file],
     show_tool_calls=True, 
-    model=Groq(id="llama3-70b-8192"),
+    model=Gemini(id=os.getenv("GOOGLE_MODEL_NAME")),
     instructions=saving_instructions,
 )

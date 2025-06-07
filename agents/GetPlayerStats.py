@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 load_dotenv("../.env")
 
 google_api_key = os.getenv("GOOGLE_API_KEY")
-groq_api_key=os.getenv("GROQ_API_KEY")
 x_rapidapi_key=os.getenv("X-RAPID-API-KEY")
 x_rapidapi_host=os.getenv("X-RAPID-API-HOST")
 
@@ -141,7 +140,7 @@ class CricketPlayerTool(Toolkit):
 
 cricket_player_analyst = Agent(
     name="Cricket Player Analyst",
-    model=Gemini(id="gemini-2.0-flash"),
+    model=Gemini(id=os.getenv("GOOGLE_MODEL_NAME")),
     role="Senior Cricket Analyst, acting as a data retriever.",
     description=(
         "A cricket data agent that fetches raw JSON data about any cricket player using a given playerID. "
