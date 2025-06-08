@@ -51,5 +51,5 @@ SportsJournalistTeam = Team(
     instructions = Journalist_instructions,
 )
 
-
-SportsJournalistTeam.print_response("Find me 5 indian batsmen above the age of 25 and write a comprehensive report comparing the batting statistics of the 5 batsmen and find the best one.", stream=True, markdown=True)
+if __name__ == "__main__":
+    SportsJournalistTeam.print_response("Find me 5 indian batsmen above the age of 25 and write a comprehensive report comparing the batting statistics of the 5 batsmen and find the best one.", stream=True, markdown=True)
