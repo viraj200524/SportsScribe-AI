@@ -9,7 +9,7 @@ load_dotenv("../.env")
 
 google_api_key=os.getenv("GOOGLE_API_KEY")
 
-model = Gemini(id=os.getenv("GOOGLE_MODEL_NAME"),api_key=google_api_key)
+model = Gemini(id="gemini-2.0-flash-lite",api_key=google_api_key)
 
 match_id_agent = Agent(
     name="Cricbuzz MatchID Finder",

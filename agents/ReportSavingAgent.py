@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import markdown
 load_dotenv("../.env")
 
-os.environ["GOOGLE_API_KEY"]
+google_api_key=os.getenv("GOOGLE_API_KEY")
 
 saving_instructions = ["Given Some content, Create a file with appropiate file name in the base directory specified and write the content as it is into it and save the file, Do not make any changes to it.",
                        "Do not generate any content of your Own."
@@ -18,15 +18,14 @@ from pathlib import Path
 base_directory = Path("../reports/")
 
 @tool
-def write_file(filename: str, contents: str) -> None:
+def write_file(filename: str, report: str) -> None:
     """
     Check if a file exists in the base directory, overwrite it if it exists,
     or create a new file, then write the contents to it.
 
     Args:
         filename (str): Name of the file to write (e.g., 'report.docx').
-        contents (str): Content to write to the file.
-        base_dir (str): Base directory path where the file will be saved.
+        report (str): Report to write to the file.
     """
     # Convert base_dir to Path object
     base_dir_path = Path(base_directory)
@@ -39,14 +38,14 @@ def write_file(filename: str, contents: str) -> None:
     
     # Write contents to the file (overwrites if exists, creates if not)
     with file_path.open('w', encoding='utf-8') as f:
-        f.write(markdown.markdown(contents))
+        f.write(markdown.markdown(report))
 
 saving_agent = Agent(
     name="Report Saving Agent",
     role="You are simple report saving agent",
-    description="Your task is to save the content given in a docx file report with appropriate name in the base directory",
+    description="Your task is to save the report given in a docx file report with appropriate name in the base directory",
     tools=[write_file],
     show_tool_calls=True, 
-    model=Gemini(id=os.getenv("GOOGLE_MODEL_NAME")),
+    model=Gemini(id="gemini-2.0-flash-lite", api_key=google_api_key),
     instructions=saving_instructions,
 )

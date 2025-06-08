@@ -1,6 +1,7 @@
 agno
 dotenv
 duckduckgo-search
+tavily-python
 groq
 agentql
 google-genai

@@ -7,9 +7,9 @@ from agno.team import Team
 from dotenv import load_dotenv
 load_dotenv("../.env")
 
-os.environ["GOOGLE_API_KEY"]=os.getenv("GOOGLE_API_KEY")
+google_api_key=os.getenv("GOOGLE_API_KEY")
 
-llm = Gemini(id=os.getenv("GOOGLE_MODEL_NAME"))
+llm = Gemini(id="gemini-2.0-flash-lite", api_key=google_api_key)
 
 batting_stats_drafter_agent = Agent(
     name="Batting Statistics Report Drafter Agent",

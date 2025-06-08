@@ -12,12 +12,13 @@ load_dotenv("../.env")
 
 x_api_token = os.getenv("X-RAPID-API-KEY")
 x_api_host = os.getenv("X-RAPID-API-HOST")
+google_api_key = os.getenv("GOOGLE_API_KEY")
 
 # Validate environment variables
 if not x_api_token or not x_api_host:
     raise ValueError("X-RAPID-API-KEY or X-RAPID-API-HOST not found in environment variables.")
 
-goog_llm = Gemini(id=os.getenv("GOOGLE_MODEL_NAME"),api_key=os.getenv("GOOGLE_API_KEY"))
+goog_llm = Gemini(id="gemini-2.0-flash-lite",api_key=google_api_key)
 groq_llm = Groq(id="llama3-70b-8192",api_key=os.getenv("GROQ_API_KEY"))
 
 cricket_instructions = "You are an AI-powered tool that can fetch information about any cricket match using all available tools."
