@@ -18,8 +18,8 @@ batting_stats_drafter_agent = Agent(
     model=llm,
     instructions = [
         "Draft a report on batting statistics of player(s).",
-        "Given the Batting Statistics in JSON format, Your Job is to create a proper formatted Report in Tabular Format.",
-        "Do not skip any information from the JSON data, make sure you include all of it.",
+        "Given the Batting Statistics in JSON format or Text Format, Your Job is to create a proper formatted Report in Tabular Format.",
+        "Do not skip any information from the JSON data or Textual data recieved, make sure you include all of it.",
         "Do not create Your own data and Do not modify the existing Data."
     ],
     tools = [ReasoningTools()],
@@ -33,8 +33,8 @@ bowling_stats_drafter_agent = Agent(
     model=llm,
     instructions=[
         "Draft a report on bowling statistics of player(s).",
-        "Given the Bowling Statistics in JSON format, Your Job is to create a proper formatted Report in Tabular Format.",
-        "Do not skip any information from the JSON data, make sure you include all of it.",
+        "Given the Bowling Statistics in JSON format or Text Format, Your Job is to create a proper formatted Report in Tabular Format.",
+        "Do not skip any information from the JSON data or Textual data, make sure you include all of it.",
         "Do not create Your own data and Do not modify the existing Data."
     ],
     tools = [ReasoningTools()],
@@ -48,7 +48,7 @@ player_info_stats_drafter_agent = Agent(
     model=llm,  # Using the same Gemini model as other agents
     instructions=[
         "Draft a comprehensive report on player information, including their batting and bowling statistics.",
-        "Given the Player Information and Statistics in JSON format, create a properly formatted report in Markdown, using tabular format where appropriate.",
+        "Given the Player Information and Statistics in JSON format or Textual format, create a properly formatted report in Markdown, using tabular format where appropriate.",
         "Use the batting_stats_drafter_agent to generate the batting statistics section and the bowling_stats_drafter_agent to generate the bowling statistics section.",
         "Include all general player information (e.g., name, role, team) in a separate section before the statistics.",
         "Do not skip any information from the JSON data, make sure you include all of it.",
@@ -68,8 +68,8 @@ match_report_drafter = Agent(
     instructions=[
         "Your Task is to generate a comprehensive report on a cricket match.",
         "Given the Match Details in JSON format, create a properly formatted report in Markdown, using tabular format where appropriate.",
-        "Include all the information of the Match provided in JSON format to you.",
-        "Do not skip any information from the JSON data, make sure you include all of it.",
+        "Include all the information of the Match provided in JSON format or Textual format to you.",
+        "Do not skip any information from the JSON data or Textual data, make sure you include all of it.",
         "If required You can use the DuckDuckGo search tool to get some extra critical information required about the match from the internet which would enhance the report."
         "Make sure that the report seems to be drafted by a senior sports journalist maintaining the JOURNALISM factor in the report.",
         "The report should be so strong and include all the critical details that it should be able to be published in a sports newspaper.",

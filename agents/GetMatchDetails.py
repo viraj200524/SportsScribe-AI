@@ -142,7 +142,7 @@ senior_data_analyst = Agent(
         - Return the data in proper json formatting as recieved from the api and beutify it a bit if required to make the json more readable.
         - Do NOT interpret, summarize, or explain the data.
         - If the user specifies which data they want (e.g., “get me scorecard for matchID 123”), call only that tool.
-        - Always Pretty print the JSON
+        - Always Pretty print the JSON and return that json data.
 
         🧠 Example queries:
         - "Give me the scorecard of match ID 45063"
