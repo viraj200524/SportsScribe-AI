@@ -12,7 +12,7 @@ google_api_key = os.getenv("GOOGLE_API_KEY")
 x_rapidapi_key=os.getenv("X-RAPID-API-KEY")
 x_rapidapi_host=os.getenv("X-RAPID-API-HOST")
 
-cricket_instructions = "You are an AI-powered tool that can fetch information about any cricket match using all available tools."
+cricket_instructions = "You are an AI-powered tool that can fetch information about any cricket player given the player ID by using all the available tools to the full potential."
 
 from agno.agent import Toolkit
 import requests
@@ -138,43 +138,40 @@ class CricketPlayerTool(Toolkit):
             return {"error": f"API request failed: {str(e)}"}
         
 
-cricket_player_analyst = Agent(
-    name="Cricket Player Analyst",
+cricket_player_agent = Agent(
+    name="Cricket Player Data Fetcher",
     model=Gemini(id="gemini-2.0-flash-lite", api_key=google_api_key),
-    role="Senior Cricket Analyst, acting as a data retriever.",
+    role="Cricket Player Data Specialist",
     description=(
-        "A cricket data agent that fetches raw JSON data about any cricket player using a given playerID. "
-        "It can retrieve batting statistics, bowling statistics, profile information, and career details, but does not analyze or summarize the data."
+        "An agent designed to fetch raw JSON data for cricket players using a provided player ID. "
+        "It retrieves batting statistics, bowling statistics, profile information, or career details without analyzing or summarizing the data."
     ),
     tools=[CricketPlayerTool(), ReasoningTools()],
     instructions="""
-        Your job is to retrieve and return raw JSON data about cricket players based on the playerID provided by the user.
+        Your role is to fetch raw JSON data for cricket players based on the playerID provided by the user, using the CricketPlayerTool toolkit.
 
-        You have access to the following tools:
+        Available tools:
+        1. **get_player_batting_stats(playerID: int)**: Retrieves batting statistics across formats (Test, ODI, T20, IPL).
+        2. **get_player_bowling_stats(playerID: int)**: Fetches bowling statistics across formats.
+        3. **get_player_info(playerID: int)**: Obtains profile details such as name, date of birth, role, batting style, and bowling style.
+        4. **get_player_career_info(playerID: int)**: Retrieves career details including teams, debut matches, and last matches.
 
-        1. **get_player_batting_stats(playerID: int)**: Fetch the player's batting statistics across formats.
-        2. **get_player_bowling_stats(playerID: int)**: Fetch the player's bowling statistics across formats.
-        3. **get_player_info(playerID: int)**: Fetch general profile details like name, role, and styles.
-        4. **get_player_career_info(playerID: int)**: Fetch career details like teams, debut, and last matches.
+        Response requirements:
+        - Call only the tool(s) specified by the user's request (e.g., batting stats, bowling stats, profile, or career info).
+        - Return the raw JSON data as received from the API, formatted with proper indentation for readability using json.dumps with an indent of 2.
+        - You can use the ReasontingTools to reason about ambiguios user requests and determine the most suitable tool to call.
+        - Do NOT analyze, summarize, or provide explanations of the data.
+        - If the user specifies a particular type of data (e.g., "get batting stats for playerID 123"), use only the corresponding tool.
+        - Ensure the JSON output is pretty-printed for clarity.
 
-        🛠 Your response must:
-        - ONLY call the relevant tool(s) based on the user request.
-        - Always Provide the data in proper pretty formatted JSON format.
-        - Do NOT interpret, summarize, or explain the data, Keep the data contents as they are.
-        - If the user specifies which data they want (e.g., “get me batting stats for playerID 1413”), call only that tool.
-        - If the API returns an error, include the error message in the JSON output as received, maintaining the pretty-printed format.
+        Example queries:
+        - "Fetch batting stats for player ID 35320"
+        - "Get bowling statistics for player ID 625383"
+        - "Retrieve profile info for player ID 28081"
+        - "Get career info for player ID 253802"
 
-        🧠 Example queries:
-        - "Give me the batting stats of player ID 1413"
-        - "Fetch career info for player ID 576"
-        - "Get general info about player 35263"
-
-        Only use tools. Do not generate natural language explanations.
-        """
+        Use only the provided tools and return only the JSON data.
+        """,
 )
-
-if __name__ == "__main__":
-    cricket_player_analyst.print_response("Give me info of the player with ID 1413")
-    
     
 

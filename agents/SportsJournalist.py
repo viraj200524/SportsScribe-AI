@@ -1,55 +1,83 @@
-from Getting_IDs import Getting_ID_Team
-from FinalDrafter import FinalReportDraftingTeam
-from GetMatchDetails import senior_data_analyst
-from GetPlayerStats import cricket_player_analyst
-from ReportSavingAgent import saving_agent
-from agno.tools.tavily import TavilyTools
-
-
-
-import os
-from dotenv import load_dotenv
-load_dotenv("../.env")
-
+from agno.agent import Agent
 from agno.team.team import Team
 from agno.models.google import Gemini
 from agno.tools.reasoning import ReasoningTools
+import os
+from dotenv import load_dotenv
 
-google_api_key =os.getenv("GOOGLE_API_KEY")
+# Assuming these imports are correctly defined in their respective modules
+from Getting_IDs import Getting_ID_Team
+from FinalDrafter import FinalReportDraftingTeam
+from GetMatchDetails import cricket_data_agent
+from GetPlayerStats import cricket_player_agent
+from ReportSavingAgent import saving_agent
+from WebAgent import Web_Search_Agent
 
-tavily_api_key=os.getenv("TAVILY_API_KEY")
+# Load environment variables
+load_dotenv("../.env")
 
-llm = Gemini(id="gemini-2.0-flash-lite",api_key=google_api_key)
+google_api_key = os.getenv("GOOGLE_API_KEY")
 
-Journalist_instructions = [
-    "You are an expert sports journalism team, internationally acclaimed for your award-winning sports journalism. Your reports and insights are highly valued by fans for their depth and clarity.",
-    "Your task is to generate a detailed, insightful, and human-readable report about a cricket match, a player, or both, as specified by the user.",
-    "If the user provides only the name of a match (with or without a date) or player, first retrieve the Cricbuzz ID for that match or player to ensure accurate data collection.",
-    "Once the Cricbuzz ID is obtained, gather all relevant data for the match or the player as per user query, for match include including team performance, key moments, and player statistics, to address the user's query comprehensively.",
-    "For player-specific queries, collect detailed information such as the player's role (e.g., batsman, bowler, all-rounder), recent performances, career highlights, match-specific statistics (e.g., batting runs, bowling wickets) etc addressing the user query about the player.",
-    "Knowing the capabilities of your member agents, if you feel that they do not have the capability to do some particular task then you can use TavilySearch agent to search the web for the answer.",
-    "When generating reports about players, include a general profile (e.g., name, team, role) and detailed statistics (e.g., batting and bowling stats) in a tabular format, with the Help of the FinalReportDraftinAgent and its SubAgents.",
-    "Ensure all data from the provided input (e.g., JSON data from Cricbuzz or other sources) is included in the report without omission or modification, maintaining accuracy and fidelity to the original data.",
-    "You can add some critical information enhancing Your Report to tailor the Media from the internet by using the DuckDuckGo Search tool, but make sure you scrape minimal amount of info from the web.",
-    "Do not make any changes to the existing JSON data."
-    "Structure the report in Markdown format with clear sections, headers, and tables for readability, ensuring it is suitable for conversion to a .docx file by the saving_agent.",
-    "If the user requests to save the report, use the saving_agent to save it in .docx format with an appropriate file name that reflects the match or player (e.g., 'India_vs_Australia_2025-06-01.docx' or 'Virat_Kohli_Report.docx').",
-    "For combined match and player reports, integrate match context (e.g., key moments, result) with player-specific insights (e.g., standout performances), highlighting the player's contribution to the match outcome.",
-    "Make sure the analysis and conclusion part of the report is always a bit detailed having all key words."
-]
+# Validate environment variables
+if not google_api_key:
+    raise ValueError("GOOGLE_API_KEY not found in environment variables.")
 
+llm = Gemini(id="gemini-2.0-flash-lite", api_key=google_api_key)
+
+# Enhanced Sports Journalist Team
 SportsJournalistTeam = Team(
-    members = [Getting_ID_Team,senior_data_analyst, cricket_player_analyst, FinalReportDraftingTeam, saving_agent],
-    name = "Sports Journalism Team",
-    description = "A team of expert AI Agents and Teams who provide in-depth analysis and reporting on any Cricket matches or Cricket Players asked by the user",
+    members=[
+        Web_Search_Agent,
+        Getting_ID_Team,
+        cricket_data_agent,
+        cricket_player_agent,
+        FinalReportDraftingTeam,
+        saving_agent
+    ],
+    name="Premier Cricket Journalism Syndicate",
+    description=(
+        "An internationally acclaimed team of expert AI agents and sub-teams that deliver comprehensive, publication-ready reports on cricket matches, players, or both, "
+        "integrating detailed data, insightful analysis, and professional formatting for top-tier sports media."
+    ),
+    role=(
+        "As a collective of Senior Sports Journalists, you are tasked with producing in-depth, accurate, and engaging cricket reports that meet the standards of premier sports publications, "
+        "leveraging coordinated efforts to gather data, draft reports, and archive them in a professional format."
+    ),
     mode="coordinate",
     model=llm,
-    tools=[ReasoningTools(), TavilyTools()],
+    tools=[ReasoningTools()],
     show_members_responses=True,
     show_tool_calls=True,
     markdown=True,
-    instructions = Journalist_instructions,
+    instructions=[
+        "Operate as an elite team of Senior Sports Journalists to produce comprehensive, publication-ready reports on cricket matches, players, or both, based on user queries and provided data, as of {datetime}.",
+        "Analyze the user query to determine whether it pertains to a match, player(s), or both, and delegate tasks to the appropriate members:",
+        "  - Use `Getting_ID_Team` to retrieve Cricbuzz IDs for matches or players if only names (with or without dates) are provided.",
+        "  - Use `cricket_data_agent` to fetch match data (e.g., scorecards, commentary, general info) based on the match ID.",
+        "  - Use `cricket_player_agent` to gather player data (e.g., batting, bowling, profile, career info) based on the player ID.",
+        "  - Use `Web_Search_Agent` to fetch essential supplementary information (e.g., recent player achievements, match context, or tournament background) only when needed and not obtainable from other members, ensuring minimal web scraping.",
+        "  - Use `FinalReportDraftingTeam` to draft the comprehensive report, integrating match and/or player data.",
+        "  - Use `saving_agent` to save the final report as a .docx file with an appropriate filename (e.g., 'India_vs_Australia_2025-06-01.docx' or 'Virat_Kohli_Report.docx').",
+        "Include all provided JSON or textual data in the report without omission or modification, ensuring accuracy and fidelity to the original data.",
+        "For match reports, include team performance, key moments, and relevant player statistics, highlighting critical events and outcomes in a narrative that captures the match's significance.",
+        "For player reports, include a general profile (e.g., name, team, role), career highlights, and detailed statistics (e.g., batting runs, bowling wickets) in tabular format.",
+        "For combined match and player reports, integrate match context (e.g., result, key moments) with player-specific insights (e.g., standout performances), emphasizing the player's contribution to the match.",
+        "Structure the report in Markdown format with clear sections (e.g., Match Overview, Player Profile, Statistics, Analysis and Conclusion), using headers and tables for readability and publication readiness.",
+        "Include a header with the report title (e.g., 'IPL 2025 Finals: RCB vs PBKS') and the current date and time ({datetime}) for timeliness.",
+        "Ensure the report maintains a professional, engaging journalistic tone, suitable for publication in a top-tier sports newspaper, with a detailed analysis and conclusion section incorporating key cricket terminology.",
+        "Use ReasoningTools to logically organize data and ensure a cohesive, compelling narrative across sections.",
+        "Handle errors gracefully, including invalid IDs, API failures, or missing data, by including clear error messages in the report or delegating to appropriate members for resolution.",
+        "Save the final report using `saving_agent` in .docx format, ensuring the filename reflects the query content (e.g., match or player name and date) and is ready for publication.",
+        "The final output must be a single, cohesive Markdown report saved as a .docx file, meeting the highest standards of professional sports journalism."
+    ],
+    share_member_interactions=True,
+    enable_agentic_context=True,
+    add_datetime_to_instructions=True,
+    success_criteria=(
+        "The Premier Cricket Journalism Syndicate succeeds when it accurately delegates tasks, retrieves necessary Cricbuzz IDs, incorporates all provided data, uses minimal supplementary web information, "
+        "and delivers a professional, publication-ready Markdown report saved as a .docx file with clear sections, tables, and an engaging, detailed journalistic narrative."
+    )
 )
 
 if __name__ == "__main__":
-    SportsJournalistTeam.print_response("Give me a detailed report on IPL 2025 Finals between RCB and PBKS", stream=True, markdown=True)
+    SportsJournalistTeam.print_response("Give me a comprehensive report on IPL 2025 Finals between RCB and PBKS", stream=True, markdown=True)

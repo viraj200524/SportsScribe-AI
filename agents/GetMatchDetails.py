@@ -21,7 +21,7 @@ if not x_api_token or not x_api_host:
 goog_llm = Gemini(id="gemini-2.0-flash-lite",api_key=google_api_key)
 groq_llm = Groq(id="llama3-70b-8192",api_key=os.getenv("GROQ_API_KEY"))
 
-cricket_instructions = "You are an AI-powered tool that can fetch information about any cricket match using all available tools."
+cricket_instructions = "You are an AI-powered tool that can fetch information about any cricket match, given the cricket match ID using all available tools."
 
 class CricketMatchTools(Toolkit):
     def __init__(self):
@@ -119,40 +119,36 @@ class CricketMatchTools(Toolkit):
         except requests.RequestException as e:
             return {"error": f"API request failed: {str(e)}"}
 
-senior_data_analyst = Agent(
-    name="Cricket Match Analyst",
+cricket_data_agent = Agent(
+    name="Cricket Data Fetcher",
     model=goog_llm,
-    role="Senior Cricket Analyst, acting as a data retriever.",
+    role="Cricket Data Specialist",
     description=(
-        "A cricket data agent that fetches raw JSON data about any cricket match using a given matchID. "
-        "It can retrieve scorecards, commentary, and general match info, but does not analyze or summarize the data."
+        "An agent designed to fetch raw JSON data for cricket matches using a provided match ID. "
+        "It retrieves scorecards, ball-by-ball commentary, or general match information without analyzing or summarizing the data."
     ),
-    tools=[CricketMatchTools(),ReasoningTools()],
+    tools=[CricketMatchTools(), ReasoningTools()],
     instructions="""
-        Your job is to retrieve and return raw JSON data about cricket matches based on the matchID provided by the user.
+        Your role is to fetch JSON data for cricket matches based on the matchID provided by the user, using the CricketMatchTools toolkit.
 
-        You have access to the following tools:
+        Available tools:
+        1. **get_match_score_card(matchID: int)**: Retrieves the full match scorecard with detailed player statistics.
+        2. **get_match_commentary(matchID: int)**: Fetches over-wise and ball-by-ball match commentary.
+        3. **get_general_match_info(matchID: int)**: Obtains general match details such as teams, venue, toss result, and status.
 
-        1. **get_match_score_card(matchID: int)**: Fetch the full match scorecard.
-        2. **get_match_commentary(matchID: int)**: Fetch over-wise and ball-by-ball match commentary.
-        3. **get_general_match_info(matchID: int)**: Fetch general details like teams, venue, toss, and status.
+        Response requirements:
+        - Call only the tool(s) specified by the user's request (e.g., scorecard, commentary, or general info).
+        - You can use the ReasontingTools to reason about ambiguios user requests and determine the most suitable tool to call.
+        - Return the raw JSON data as received from the API, formatted with proper indentation for readability.
+        - Do NOT analyze, summarize, or provide explanations of the data.
+        - If the user specifies a particular type of data (e.g., "get scorecard for matchID 123"), use only the corresponding tool.
+        - Pretty-print the JSON output using json.dumps with an indent of 2 for clarity.
 
-        🛠 Your response must:
-        - ONLY call the relevant tool(s) based on the user request.
-        - Return the data in proper json formatting as recieved from the api and beutify it a bit if required to make the json more readable.
-        - Do NOT interpret, summarize, or explain the data.
-        - If the user specifies which data they want (e.g., “get me scorecard for matchID 123”), call only that tool.
-        - Always Pretty print the JSON and return that json data.
+        Example queries:
+        - "Fetch the scorecard for match ID 45063"
+        - "Get commentary for match ID 99500"
+        - "Retrieve general info for match ID 67320"
 
-        🧠 Example queries:
-        - "Give me the scorecard of match ID 45063"
-        - "Fetch commentary for match ID 99500"
-        - "Get general info about match 67320"
-
-        Only use tools. Do not generate natural language explanations.
+        Use only the provided tools and return only the JSON data.
         """
 )
-
-# Execute the query
-if __name__ == "__main__":
-    senior_data_analyst.print_response("Give me the general info of the cricket match with ID 115192")
