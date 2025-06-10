@@ -6,12 +6,14 @@ from agno.tools.tavily import TavilyTools
 from agno.team import Team
 import os
 from dotenv import load_dotenv
+from agno.models.huggingface import HuggingFace
 
 # Load environment variables
 load_dotenv("../.env")
 
 google_api_key = os.getenv("GOOGLE_API_KEY")
 tavily_api_key = os.getenv("TAVILY_API_KEY")
+token = os.getenv("HF_TOKEN")
 
 # Validate environment variables
 if not google_api_key:
@@ -20,6 +22,12 @@ if not tavily_api_key:
     raise ValueError("TAVILY_API_KEY not found in environment variables.")
 
 llm = Gemini(id="gemini-2.0-flash-lite", api_key=google_api_key)
+
+model = HuggingFace(
+    "mistralai/Mixtral-8x7B-Instruct-v0.1", 
+    provider="hf-inference", 
+    api_key=token,
+)
 
 # Enhanced Batting Statistics Report Drafter Agent
 batting_stats_drafter_agent = Agent(
@@ -32,7 +40,7 @@ batting_stats_drafter_agent = Agent(
         "As a Senior Sports Journalist, you are tasked with creating high-quality reports on cricket players' batting statistics, "
         "ensuring accurate and engaging presentation of performance data for sports publications."
     ),
-    model=llm,
+    model=model,
     instructions=[
         "Generate a detailed report on cricket player's batting statistics based on provided JSON or textual data.",
         "Structure the report in Markdown format, using well-organized tables to present all batting statistics across all formats.",
@@ -58,7 +66,7 @@ bowling_stats_drafter_agent = Agent(
         "As a Senior Sports Journalist, you are responsible for crafting high-quality reports on cricket players' bowling statistics, "
         "presenting performance data in an engaging and accurate manner for sports media."
     ),
-    model=llm,
+    model=model,
     instructions=[
         "Generate a detailed report on cricket players' bowling statistics based on provided JSON or textual data.",
         "Structure the report in Markdown format, using well-organized tables to present all bowling statistics (e.g., wickets, average, economy rate) across formats (Test, ODI, T20, IPL).",
@@ -84,7 +92,7 @@ player_info_stats_drafter_agent = Agent(
         "As a Senior Sports Journalist, you are tasked with producing detailed reports that combine cricket players' general information, career milestones, "
         "and batting and bowling statistics, formatted for sports publications."
     ),
-    model=llm,
+    model=model,
     instructions=[
         "Generate a comprehensive report on cricket players, including general information, career details, and batting and bowling statistics, based on provided JSON or textual data.",
         "Structure the report in Markdown format with distinct sections: General Information, Career Milestones, Batting Statistics, and Bowling Statistics.",
@@ -117,7 +125,7 @@ match_report_drafter = Agent(
         "As a Senior Sports Journalist, you are responsible for producing engaging and detailed reports on cricket matches, "
         "ensuring all match data is presented accurately and compellingly for sports publications."
     ),
-    model=llm,
+    model=model,
     instructions=[
         "Generate a comprehensive report on a cricket match based on provided JSON or textual data, such as scorecards, commentary, or general match information.",
         "Structure the report in Markdown format with clear sections (e.g., Match Overview, Key Moments, Scorecard Summary) and use tables for structured data like scores or player performances.",
@@ -139,10 +147,6 @@ FinalReportDraftingTeam = Team(
         "A specialized team of senior sports journalist agents that collaboratively produce publication-ready, comprehensive reports on cricket matches, players, or both, "
         "integrating match details, player profiles, and performance statistics in a professional and engaging format."
     ),
-    role=(
-        "You are a team of Senior Sports Journalists working cohesively to draft high-quality, publication-ready reports on cricket matches, players, or a combination of both. "
-        "Your collective expertise ensures accurate delegation of tasks and seamless integration of match and player data into professional Markdown reports."
-    ),
     members=[
         batting_stats_drafter_agent,
         bowling_stats_drafter_agent,
@@ -151,7 +155,7 @@ FinalReportDraftingTeam = Team(
     ],
     tools=[ReasoningTools(), TavilyTools(api_key=tavily_api_key, format="json")],
     mode="coordinate",
-    model=llm,
+    model=model,
     instructions=[
         "Operate as a cohesive team of Senior Sports Journalists to draft comprehensive, publication-ready reports on cricket matches, players, or both, based on user queries and provided JSON or textual data.",
         "Analyze the user query to determine whether it pertains to a match, player(s), or both, and delegate tasks to the appropriate agent(s):",
