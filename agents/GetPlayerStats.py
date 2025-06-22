@@ -150,7 +150,7 @@ cricket_player_agent = Agent(
     instructions="""
         Your role is to fetch raw JSON data for cricket players based on the playerID provided by the user, using the CricketPlayerTool toolkit.
 
-        Available tools:
+        Available tools in CricketPlayerTool:
         1. **get_player_batting_stats(playerID: int)**: Retrieves batting statistics across formats (Test, ODI, T20, IPL).
         2. **get_player_bowling_stats(playerID: int)**: Fetches bowling statistics across formats.
         3. **get_player_info(playerID: int)**: Obtains profile details such as name, date of birth, role, batting style, and bowling style.

@@ -42,8 +42,8 @@ SportsJournalistTeam = Team(
     mode="coordinate",
     model=llm,
     tools=[ReasoningTools()],
-    show_members_responses=True,
-    show_tool_calls=True,
+    show_members_responses=False,  # Suppress individual member responses
+    show_tool_calls=False,  # Suppress tool call logs
     markdown=True,
     instructions=[
         "Operate as an elite team of Senior Sports Journalists to produce comprehensive, detailed, publication-ready reports on cricket matches, players, or both, based on user queries and provided data, as of {datetime}.",
@@ -65,18 +65,18 @@ SportsJournalistTeam = Team(
         "Handle errors gracefully, including invalid IDs, API failures, or missing data, by including clear error messages in the report or delegating to appropriate members for resolution.",
         "Always Save the final report using `saving_agent` in .md format, ensuring the filename reflects the query content (e.g., match or player name and date) and is ready for publication.",
         "The final output must be a single, cohesive Markdown report saved as a .md file, meeting the highest standards of professional sports journalism.",
-        "Do NOT return intermediate plans, logs, or step-by-step updates. Only return the final, publication-ready Markdown report after all delegated tasks (ID retrieval, data fetching, drafting, saving) are complete.",
-        "If a report is saved, return only the final confirmation message or the saved report content, not the intermediate steps.",
+        "Do NOT return intermediate plans, logs, or step-by-step updates in the terminal output. Suppress all intermediate messages, including task delegation logs or status updates (e.g., 'Okay, I will create a report' or 'Delegating to Cricbuzz ID Finding Team').",
+        "After saving the report, display only the full content of the saved Markdown report in the terminal output, followed by a confirmation message indicating the report was saved successfully (e.g., 'Report saved successfully as Virat_Kohli_Report.md').",
         "Ensure all sub-agents complete their tasks and aggregate their outputs before returning any response to the user.",
     ],
-    share_member_interactions=True,
+    share_member_interactions=False,  # Suppress sharing of member interactions
     enable_agentic_context=True,
     add_datetime_to_instructions=True,
     success_criteria=(
         "The Premier Cricket Journalism Syndicate succeeds when it accurately delegates tasks, retrieves necessary Cricbuzz IDs, incorporates all provided data, uses minimal supplementary web information, "
-        "and delivers a professional, publication-ready Markdown report saved as a .md file with clear sections, tables, and an engaging, detailed journalistic narrative."
+        "and delivers a professional, publication-ready Markdown report saved as a .md file with clear sections, tables, and an engaging, detailed journalistic narrative, displaying only the final report content and save confirmation in the terminal."
     )
 )
 
 if __name__ == "__main__":
-    SportsJournalistTeam.print_response("Write me a comprehensive report on entire career of Ravindra Jadeja. Save the report.", stream=True, markdown=True)
+    SportsJournalistTeam.print_response("Write me a comprehensive report on entire career of Chris Gayle.", stream=True, markdown=True)

@@ -19,7 +19,7 @@ if not google_api_key:
 base_directory = Path("../reports/")
 
 @tool
-def write_file(filename: str, report: str) -> None:
+def write_file(filename: str, markdown_report: str) -> None:
     """
     Saves a the markdown report in a proper formatted .md file.
 
@@ -40,7 +40,7 @@ def write_file(filename: str, report: str) -> None:
     filepath = os.path.join(base_dir, filename)
 
     with open(filepath, "w", encoding="utf-8") as file:
-        file.write(report)
+        file.write(markdown_report)
     
     return f"Markdown report saved to {filepath}"
 

@@ -40,7 +40,7 @@ batting_stats_drafter_agent = Agent(
         "As a Senior Sports Journalist, you are tasked with creating high-quality reports on cricket players' batting statistics, "
         "ensuring accurate and engaging presentation of performance data for sports publications."
     ),
-    model=model,
+    model=llm,
     instructions=[
         "Generate a detailed report on cricket player's batting statistics based on provided JSON or textual data.",
         "Structure the report in Markdown format, using well-organized tables to present all batting statistics across all formats.",
@@ -66,7 +66,7 @@ bowling_stats_drafter_agent = Agent(
         "As a Senior Sports Journalist, you are responsible for crafting high-quality reports on cricket players' bowling statistics, "
         "presenting performance data in an engaging and accurate manner for sports media."
     ),
-    model=model,
+    model=llm,
     instructions=[
         "Generate a detailed report on cricket players' bowling statistics based on provided JSON or textual data.",
         "Structure the report in Markdown format, using well-organized tables to present all bowling statistics (e.g., wickets, average, economy rate) across formats (Test, ODI, T20, IPL).",
@@ -92,7 +92,7 @@ player_info_stats_drafter_agent = Agent(
         "As a Senior Sports Journalist, you are tasked with producing detailed reports that combine cricket players' general information, career milestones, "
         "and batting and bowling statistics, formatted for sports publications."
     ),
-    model=model,
+    model=llm,
     instructions=[
         "Generate a comprehensive report on cricket players, including general information, career details, and batting and bowling statistics, based on provided JSON or textual data.",
         "Structure the report in Markdown format with distinct sections: General Information, Career Milestones, Batting Statistics, and Bowling Statistics.",
@@ -125,10 +125,10 @@ match_report_drafter = Agent(
         "As a Senior Sports Journalist, you are responsible for producing engaging and detailed reports on cricket matches, "
         "ensuring all match data is presented accurately and compellingly for sports publications."
     ),
-    model=model,
+    model=llm,
     instructions=[
         "Generate a comprehensive report on a cricket match based on provided JSON or textual data, such as scorecards, commentary, or general match information.",
-        "Structure the report in Markdown format with clear sections (e.g., Match Overview, Key Moments, Scorecard Summary) and use tables for structured data like scores or player performances.",
+        "Structure the report in Markdown format with clear sections (e.g., Match Overview, Key Moments, Scorecard) and use tables for structured data like scores or player performances.",
         "Include all data from the provided JSON or text without omission or modification, ensuring accuracy and completeness.",
         "Use ReasoningTools to organize the data logically and create a narrative that captures the match's significance and key events.",
         "Optionally, use TavilyTools to fetch supplementary information (e.g., match context, team form, or historical significance) to enhance the report, citing sources appropriately.",
@@ -155,7 +155,7 @@ FinalReportDraftingTeam = Team(
     ],
     tools=[ReasoningTools(), TavilyTools(api_key=tavily_api_key, format="json")],
     mode="coordinate",
-    model=model,
+    model=llm,
     instructions=[
         "Operate as a cohesive team of Senior Sports Journalists to draft comprehensive, publication-ready reports on cricket matches, players, or both, based on user queries and provided JSON or textual data.",
         "Analyze the user query to determine whether it pertains to a match, player(s), or both, and delegate tasks to the appropriate agent(s):",
@@ -167,7 +167,9 @@ FinalReportDraftingTeam = Team(
         "Maintain a professional, journalistic tone suitable for a sports newspaper, ensuring clarity, accuracy, and engagement.",
         "Handle errors gracefully, including invalid data or API failures, by including error messages in the report or delegating to appropriate agents for resolution.",
         "The final report must be in Markdown format, well-organized, and ready for conversion to .docx for publication.",
-        "Include the current date and time (provided as {datetime}) in the report header to reflect the report's timeliness."
+        "Include the current date and time (provided as {datetime}) in the report header to reflect the report's timeliness.",
+        "Every report must be detailed with atleast the atleast the overview, background of the cricket match or player, and a conclusion section that summarizes the key points and insights along with otehr all parts of the report",
+        "The final output must be a single, cohesive Markdown report saved as a .md file, meeting the highest standards of professional sports journalism."
     ],
     enable_agentic_context=True,
     share_member_interactions=True,
