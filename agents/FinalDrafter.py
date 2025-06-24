@@ -49,7 +49,9 @@ batting_stats_drafter_agent = Agent(
         "Optionally, use TavilyTools to fetch supplementary information (e.g., recent batting achievements or milestones) to enhance the report's context, citing sources appropriately.",
         "Ensure the report maintains a professional journalistic tone, is human-readable, and is ready for publication.",
         "Include a header with the report title and the current date and time ({datetime}) for timeliness.",
-        "The final output must be in Markdown format with proper formatting and no invented or altered data."
+        "The final output must be in Markdown format with proper formatting and no invented or altered data.",
+        "Never Include any Cricbuzz ID of any Match or Player in the report, as it is not allowed to be used in any publication.",
+        "Ensure the report is comprehensive, covering all relevant batting statistics such as runs scored, averages and strike rates across formats (Test, ODI, T20, IPL), and includes any notable records or achievements.",
     ],
     tools=[ReasoningTools(), TavilyTools(api_key=tavily_api_key, format="json")],
     show_tool_calls=True,

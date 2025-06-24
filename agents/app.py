@@ -1,50 +1,47 @@
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
-import markdown2
-from xhtml2pdf import pisa
-import tempfile
-import base64
-import os
+from ReportSavingAgent import get_file_path
 
 st.set_page_config(layout="wide")
 st.title("Markdown Report Viewer")
 
-# Store markdown content across interactions
-if 'markdown_content' not in st.session_state:
-    st.session_state.markdown_content = ""
+# --- Sidebar Download Button (Always Visible) ---
+with st.sidebar:
+    st.markdown("### 📥 Download Section")
+    
+    if st.button("⬇️ Prepare DOCX Report for Download"):
+        # Save state to indicate user clicked download button
+        st.session_state.download_requested = True
 
-# Create a row with 2 columns to simulate "top right"
-col_left, col_right = st.columns([7, 1])
+    # If download is requested, handle logic
+    if st.session_state.get("download_requested", False):
+        docx_file_path = get_file_path()
+        if docx_file_path:
+            try:
+                download_url = f"http://127.0.0.1:8000/download-docx?filepath={docx_file_path}"
+                response = requests.get(download_url)
+                response.raise_for_status()
 
-with col_right:
-    if st.session_state.markdown_content:
-        if st.button("💾 Save Report"):
-            # Convert markdown to HTML
-            html = markdown2.markdown(st.session_state.markdown_content)
+                # Streamlit download button (with actual download data)
+                st.download_button(
+                    label="✅ Click to Download DOCX",
+                    data=response.content,
+                    file_name=docx_file_path.split("/")[-1],
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
 
-            # Generate PDF using xhtml2pdf
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_pdf:
-                pdf_path = tmp_pdf.name
+                # Reset trigger after download button is rendered
+                st.session_state.download_requested = False
 
-            # Write HTML to PDF file
-            with open(pdf_path, "wb") as pdf_file:
-                pisa_status = pisa.CreatePDF(html, dest=pdf_file)
+            except requests.RequestException as e:
+                st.error(f"Download failed: {e}")
+        else:
+            st.warning("No file path returned. Please generate a report first.")
 
-            if not pisa_status.err:
-                with open(pdf_path, "rb") as f:
-                    b64 = base64.b64encode(f.read()).decode()
-                href = f'<a href="data:application/pdf;base64,{b64}" download="report.pdf">📄 Click here to download your report</a>'
-                st.markdown(href, unsafe_allow_html=True)
-                # Optional: cleanup can be done later automatically
-                # os.remove(pdf_path)
-            else:
-                st.error("Failed to generate PDF.")
+# --- Main UI for Input and Markdown Display ---
+input_text = st.text_area("Enter your text", height=100)
 
-# Input area
-input_text = st.text_area("Enter your text", height=200)
-
-# Generate Report button
 if st.button("Generate Report"):
     if input_text.strip() == "":
         st.warning("Please enter some text.")
@@ -52,18 +49,16 @@ if st.button("Generate Report"):
         try:
             response = requests.post(
                 "http://127.0.0.1:8000/get_report",
-                json={"input": input_text}
+                json={"input": input_text + " Save the report."}
             )
             response.raise_for_status()
 
-            # Extract markdown from response HTML
+            # Parse the HTML response
             soup = BeautifulSoup(response.text, "html.parser")
             markdown_div = soup.find(class_="language-markdown")
 
             if markdown_div:
-                markdown_text = markdown_div.get_text()
-                st.session_state.markdown_content = markdown_text
-                st.markdown(markdown_text, unsafe_allow_html=True)
+                st.markdown(markdown_div.get_text(), unsafe_allow_html=True)
             else:
                 st.error("Could not find markdown content in the response.")
         except requests.RequestException as e:

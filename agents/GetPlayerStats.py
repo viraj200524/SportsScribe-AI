@@ -158,11 +158,12 @@ cricket_player_agent = Agent(
 
         Response requirements:
         - Call only the tool(s) specified by the user's request (e.g., batting stats, bowling stats, profile, or career info).
+        - Do not call any tool that is not relevant to the user's request.
         - Return the raw JSON data as received from the API, formatted with proper indentation for readability using json.dumps with an indent of 2.
         - You can use the ReasontingTools to reason about ambiguios user requests and determine the most suitable tool to call.
         - Do NOT analyze, summarize, or provide explanations of the data.
         - If the user specifies a particular type of data (e.g., "get batting stats for playerID 123"), use only the corresponding tool.
-        - Ensure the JSON output is pretty-printed for clarity.
+        - Ensure the output is as it is recieved from the tool, without any modifications or additional formatting.
 
         Example queries:
         - "Fetch batting stats for player ID 35320"
