@@ -133,7 +133,7 @@ saving_agent = Agent(
     ),
     tools=[write_file],
     show_tool_calls=True,
-    model=Gemini(id="gemini-2.0-flash-lite", api_key=google_api_key),
+    model=Gemini(id=os.getenv("GOOGLE_MODEL"), api_key=google_api_key),
     instructions=[
         "Save the entire provided cricket report in its original Markdown format as a .md file in the base directory (`../reports/`).",
         "Use the `write_file` tool to save the report exactly as received, without modifying, summarizing, or omitting any content, and convert it to DOCX.",

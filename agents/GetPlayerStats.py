@@ -140,7 +140,7 @@ class CricketPlayerTool(Toolkit):
 
 cricket_player_agent = Agent(
     name="Cricket Player Data Fetcher",
-    model=Gemini(id="gemini-2.0-flash-lite", api_key=google_api_key),
+    model=Gemini(id=os.getenv("GOOGLE_MODEL"), api_key=google_api_key),
     role="Cricket Player Data Specialist",
     description=(
         "An agent designed to fetch raw JSON data for cricket players using a provided player ID. "

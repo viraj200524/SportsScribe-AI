@@ -22,7 +22,7 @@ google_api_key = os.getenv("GOOGLE_API_KEY")
 if not google_api_key:
     raise ValueError("GOOGLE_API_KEY not found in environment variables.")
 
-llm = Gemini(id="gemini-2.0-flash-lite", api_key=google_api_key)
+llm = Gemini(id=os.getenv("GOOGLE_MODEL"), api_key=google_api_key)
 
 # Enhanced Sports Journalist Team
 SportsJournalistTeam = Team(
@@ -71,7 +71,7 @@ SportsJournalistTeam = Team(
         "After saving the report, display only the full content of the saved Markdown report in the output, followed by a confirmation message indicating the report was saved successfully (e.g., 'Report saved successfully as Virat_Kohli_Report.md').",
         "Ensure all sub-agents complete their tasks and aggregate their outputs before returning any response to the user."
         ],
-        share_member_interactions=False,
+        share_member_interactions=True,
         enable_agentic_context=True,
         add_datetime_to_instructions=True,
         success_criteria=(
@@ -81,4 +81,4 @@ SportsJournalistTeam = Team(
     )
 
 if __name__ == "__main__":
-    SportsJournalistTeam.print_response("Give me a Comprehensive report on Shubhman Gill.", stream=True, markdown=True)
+    SportsJournalistTeam.print_response("Give me a report on Bowling Statistics of Trent Boult.", stream=True, markdown=True)
