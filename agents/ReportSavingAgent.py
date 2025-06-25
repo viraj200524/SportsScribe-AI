@@ -118,7 +118,7 @@ def get_file_path() -> str:
     Returns:
         str: The path of the last saved report file, or an empty string if no file has been saved yet.
     """
-    return report_filepath if report_filepath else ""
+    return report_filepath if report_filepath else "../reports/Indian_Batsmen_Batting_Statistics_and_T20_Recommendation.docx"
 
 # Enhanced Saving Agent
 saving_agent = Agent(

@@ -7,7 +7,6 @@ import markdown
 from SportsJournalist import SportsJournalistTeam as agent
 from Getting_IDs import Getting_ID_Team as id_agent
 from GetPlayerStats import cricket_player_agent as player_agent
-from ReportSavingAgent import get_file_path
 import json
 import ast
 from fastapi import FastAPI, Query, HTTPException
@@ -146,8 +145,10 @@ async def get_bowling(request: ReportRequest):
         return JSONResponse(content={"error": str(e)}, status_code=500)
     
 @app.get("/download-docx")
-def download_docx():
-    filepath = get_file_path()
+def download_docx(filepath: str = Query(..., description="Path to the .docx file")):
+    if not os.path.exists(filepath):
+        raise HTTPException(status_code=404, detail="File not found")
+
     filename = os.path.basename(filepath)
     return FileResponse(
         path=filepath,
