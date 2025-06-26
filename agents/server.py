@@ -169,7 +169,7 @@ os.makedirs(AUDIO_DIR, exist_ok=True)
 class MarkdownInput(BaseModel):
     content: str  # Markdown content string
 
-@app.post("/generate-narration-audio/")
+@app.post("/generate-narration-audio")
 async def generate_narration_audio(data: MarkdownInput):
     try:
         audio_filename = narrate_cricket_report(data.content)
@@ -195,7 +195,7 @@ async def generate_narration_audio(data: MarkdownInput):
 async def serve_audio_file(filename: str):
     file_path = os.path.join(AUDIO_DIR, filename)
     if os.path.exists(file_path):
-        return FileResponse(file_path, media_type="audio/mpeg", filename=filename)
+        return FileResponse(file_path, media_type="audio/mp3", filename=filename)
     raise HTTPException(status_code=404, detail="Audio file not found.")
 
 if __name__ == "__main__":

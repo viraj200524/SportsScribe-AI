@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, FileText, Download, AlertCircle, CheckCircle, Mic, MicOff, Volume2 } from "lucide-react"
+import { Loader2, FileText, Download, AlertCircle, CheckCircle, Mic, MicOff, Volume2, Play, Pause, VolumeX } from "lucide-react"
 import { CricketBall } from "@/components/cricket-icons"
 import { generateReport, downloadReport } from "@/lib/api"
 import ReactMarkdown from "react-markdown"
@@ -27,9 +27,45 @@ const extractMarkdownFromHtml = (html: string): string => {
 export default function ReportGeneratorPage() {
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [markdownContent, setMarkdownContent] = useState("")
+  const [markdownContent, setMarkdownContent] = useState(`# Cricket Match Report: India vs Australia
+
+## Match Summary
+The thrilling encounter between India and Australia at the Melbourne Cricket Ground showcased exceptional cricket from both sides. India's batting lineup displayed remarkable resilience, with Virat Kohli leading from the front with a masterful century.
+
+## Key Highlights
+- **Virat Kohli**: 124 not out (142 balls, 8 fours, 2 sixes)
+- **Rohit Sharma**: 87 (98 balls, 9 fours, 1 six)
+- **Jasprit Bumrah**: 4/35 (10 overs)
+- **Pat Cummins**: 3/42 (12 overs)
+
+## Match Turning Points
+1. Kohli's partnership with Rohit Sharma (156 runs for 2nd wicket)
+2. Bumrah's devastating spell in the 15th over
+3. The final over thriller that decided the match
+
+## Player Performances
+### Indian Team
+- Excellent batting display in the middle overs
+- Bowling attack was disciplined and effective
+- Fielding was sharp with crucial catches taken
+
+### Australian Team
+- Strong bowling performance from Cummins
+- Middle order collapse cost them the match
+- Fielding lapses at crucial moments
+
+## Conclusion
+This match will be remembered as one of the finest displays of cricket, with both teams showing exceptional skill and determination. India's victory was well-deserved, built on solid partnerships and clinical bowling performances.`)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  
+  // Audio narration states
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
+  const [audioUrl, setAudioUrl] = useState("")
+  const [audioError, setAudioError] = useState("")
+  const [audioFilename, setAudioFilename] = useState("")
+  const [isPlaying, setIsPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
   
   // Speech recognition states
   const [isListening, setIsListening] = useState(false)
@@ -141,6 +177,93 @@ export default function ReportGeneratorPage() {
       setError(errorMessage)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleGenerateAudio = async () => {
+    if (!markdownContent.trim()) {
+      setAudioError("No content available to generate narration.")
+      return
+    }
+
+    setIsGeneratingAudio(true)
+    setAudioError("")
+    setAudioUrl("")
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/generate-narration-audio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: markdownContent }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log('Audio response:', data) // Debug log
+      
+      // Construct full URL if needed
+      const fullAudioUrl = data.audio_url.startsWith('http') 
+        ? data.audio_url 
+        : `${window.location.origin}${data.audio_url}`
+      
+      setAudioUrl(fullAudioUrl)
+      setAudioFilename(data.filename)
+      setSuccess("Audio narration generated successfully!")
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to generate audio narration"
+      setAudioError(errorMessage)
+    } finally {
+      setIsGeneratingAudio(false)
+    }
+  }
+
+  const handlePlayPause = () => {
+    if (!audioRef.current || !audioUrl) {
+      setAudioError("Audio not available")
+      return
+    }
+
+    console.log('Attempting to play audio:', audioUrl) // Debug log
+
+    if (isPlaying) {
+      audioRef.current.pause()
+      setIsPlaying(false)
+    } else {
+      // Test if audio can be loaded
+      audioRef.current.load() // Force reload the audio
+      audioRef.current.play().catch(error => {
+        console.error('Audio play error:', error)
+        setAudioError(`Failed to play audio: ${error.message}`)
+        setIsPlaying(false)
+      })
+    }
+  }
+
+  const handleDownloadAudio = async () => {
+    if (!audioFilename) return
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/audio/${audioFilename}`)
+      if (!response.ok) throw new Error('Download failed')
+      
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = audioFilename
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      setSuccess("Audio file downloaded successfully!")
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to download audio"
+      setAudioError(errorMessage)
     }
   }
 
@@ -297,30 +420,105 @@ export default function ReportGeneratorPage() {
                   </div>
                 </div>
               ) : markdownContent ? (
-                <div className="report-preview bg-white rounded-lg p-6 border border-green-200 max-h-96 overflow-y-auto">
-                  <ReactMarkdown
-                    components={{
-                      code({ node, inline, className, children, ...props }) {
-                        const match = /language-(\w+)/.exec(className || "")
-                        return !inline && match ? (
-                          <SyntaxHighlighter
-                            style={vscDarkPlus}
-                            language={match[1]}
-                            PreTag="div"
-                            {...props}
+                <div className="space-y-4">
+                  <div className="report-preview bg-white rounded-lg p-6 border border-green-200 max-h-96 overflow-y-auto">
+                    <ReactMarkdown
+                      components={{
+                        code({ node, inline, className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || "")
+                          return !inline && match ? (
+                            <SyntaxHighlighter
+                              style={vscDarkPlus}
+                              language={match[1]}
+                              PreTag="div"
+                              {...props}
+                            >
+                              {String(children).replace(/\n$/, "")}
+                            </SyntaxHighlighter>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          )
+                        },
+                      }}
+                    >
+                      {markdownContent}
+                    </ReactMarkdown>
+                  </div>
+
+                  {/* Audio Narration Section */}
+                  <div className="space-y-3">
+                    <Button
+                      onClick={handleGenerateAudio}
+                      disabled={isGeneratingAudio}
+                      className="w-full bg-purple-600 hover:bg-purple-700"
+                      size="sm"
+                    >
+                      {isGeneratingAudio ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Generating Audio...
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-4 h-4 mr-2" />
+                          Hear the Report
+                        </>
+                      )}
+                    </Button>
+
+                    {audioError && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{audioError}</AlertDescription>
+                      </Alert>
+                    )}
+
+                    {audioUrl && (
+                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-sm font-medium text-gray-700">Audio Narration</span>
+                          <Button
+                            onClick={handleDownloadAudio}
+                            variant="outline"
+                            size="sm"
+                            className="border-gray-300 text-gray-600 hover:bg-gray-100"
                           >
-                            {String(children).replace(/\n$/, "")}
-                          </SyntaxHighlighter>
-                        ) : (
-                          <code className={className} {...props}>
-                            {children}
-                          </code>
-                        )
-                      },
-                    }}
-                  >
-                    {markdownContent}
-                  </ReactMarkdown>
+                            <Download className="w-3 h-3 mr-1" />
+                            Download
+                          </Button>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3">
+                          <Button
+                            onClick={handlePlayPause}
+                            variant="outline"
+                            size="sm"
+                            className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                          >
+                            {isPlaying ? (
+                              <Pause className="w-4 h-4" />
+                            ) : (
+                              <Play className="w-4 h-4" />
+                            )}
+                          </Button>
+                          
+                          <div className="flex-1">
+                            <audio
+                              ref={audioRef}
+                              src={audioUrl}
+                              className="w-full"
+                              controls
+                              onPlay={() => setIsPlaying(true)}
+                              onPause={() => setIsPlaying(false)}
+                              onEnded={() => setIsPlaying(false)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-12 text-gray-500">

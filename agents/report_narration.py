@@ -90,8 +90,8 @@ def narrate_cricket_report(markdown_report):
     engine = pyttsx3.init()
     engine.setProperty('rate', 175)
     engine.setProperty('volume', 1.0)
-    engine.say(narration)
-    engine.runAndWait()
+    # engine.say(narration)
+    # engine.runAndWait()
 
     # Save to audio file
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
