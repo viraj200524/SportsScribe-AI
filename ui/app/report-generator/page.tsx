@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, FileText, Download, AlertCircle, CheckCircle } from "lucide-react"
+import { Loader2, FileText, Download, AlertCircle, CheckCircle, Mic, MicOff, Volume2 } from "lucide-react"
 import { CricketBall } from "@/components/cricket-icons"
 import { generateReport, downloadReport } from "@/lib/api"
 import ReactMarkdown from "react-markdown"
@@ -30,6 +30,92 @@ export default function ReportGeneratorPage() {
   const [markdownContent, setMarkdownContent] = useState("")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  
+  // Speech recognition states
+  const [isListening, setIsListening] = useState(false)
+  const [speechSupported, setSpeechSupported] = useState(false)
+  const [speechError, setSpeechError] = useState("")
+  const recognitionRef = useRef<any>(null)
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      if (SpeechRecognition) {
+        setSpeechSupported(true)
+        recognitionRef.current = new SpeechRecognition()
+        recognitionRef.current.continuous = true
+        recognitionRef.current.interimResults = true
+        recognitionRef.current.lang = 'en-US'
+
+        recognitionRef.current.onresult = (event: any) => {
+          let finalTranscript = ''
+          let interimTranscript = ''
+
+          // Reset silence timer on new speech
+          if (silenceTimerRef.current) {
+            clearTimeout(silenceTimerRef.current)
+          }
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript
+            } else {
+              interimTranscript += transcript
+            }
+          }
+
+          if (finalTranscript) {
+            setInput(prev => prev + finalTranscript + ' ')
+          }
+
+          // Start silence timer after processing speech
+          silenceTimerRef.current = setTimeout(() => {
+            if (isListening) {
+              stopListening()
+            }
+          }, 3000) // 3 seconds of silence
+        }
+
+        recognitionRef.current.onerror = (event: any) => {
+          setSpeechError(`Speech recognition error: ${event.error}`)
+          setIsListening(false)
+        }
+
+        recognitionRef.current.onend = () => {
+          setIsListening(false)
+          if (silenceTimerRef.current) {
+            clearTimeout(silenceTimerRef.current)
+          }
+        }
+      }
+    }
+  }, [])
+
+  const startListening = () => {
+    if (recognitionRef.current && speechSupported) {
+      setSpeechError("")
+      setIsListening(true)
+      recognitionRef.current.start()
+    }
+  }
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current)
+      }
+    }
+  }
+
+  const clearInput = () => {
+    setInput("")
+    setSpeechError("")
+  }
 
   const handleGenerateReport = async () => {
     if (!input.trim()) {
@@ -88,36 +174,86 @@ export default function ReportGeneratorPage() {
                 <span>Report Query</span>
               </CardTitle>
               <CardDescription>
-                Enter details about the match, series, or cricket topic you want to generate a report for.
+                Enter details about the match, series, or cricket topic you want to generate a report for. You can type or use voice input.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Textarea
-                placeholder="Example: Generate a report for the recent India vs Australia Test match at Melbourne Cricket Ground, focusing on batting performances and key moments..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                rows={6}
-                className="resize-none"
-              />
+              <div className="relative">
+                <Textarea
+                  placeholder="Example: Generate a report for the recent India vs Australia Test match at Melbourne Cricket Ground, focusing on batting performances and key moments..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  rows={6}
+                  className="resize-none"
+                />
+              </div>
 
-              <Button
-                onClick={handleGenerateReport}
-                disabled={isLoading || !input.trim()}
-                className="w-full bg-green-600 hover:bg-green-700"
-                size="lg"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Generating Report...
-                  </>
-                ) : (
-                  <>
-                    <CricketBall className="w-4 h-4 mr-2" />
-                    Generate Report
-                  </>
+              {/* Speech Status */}
+              {speechSupported && isListening && (
+                <Alert className="border-blue-200 bg-blue-50">
+                  <Volume2 className="h-4 w-4 text-blue-600 animate-pulse" />
+                  <AlertDescription className="text-blue-800">
+                    Listening... Speak your query now
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {speechError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{speechError}</AlertDescription>
+                </Alert>
+              )}
+
+              {!speechSupported && (
+                <Alert className="border-orange-200 bg-orange-50">
+                  <AlertCircle className="h-4 w-4 text-orange-600" />
+                  <AlertDescription className="text-orange-800">
+                    Speech recognition is not supported in your browser. Please type your query.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleGenerateReport}
+                  disabled={isLoading || !input.trim()}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  size="lg"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Generating Report...
+                    </>
+                  ) : (
+                    <>
+                      <CricketBall className="w-4 h-4 mr-2" />
+                      Generate Report
+                    </>
+                  )}
+                </Button>
+
+                {speechSupported && (
+                  <Button
+                    onClick={isListening ? stopListening : startListening}
+                    disabled={isLoading}
+                    variant={isListening ? "destructive" : "default"}
+                    className={isListening ? 
+                      "bg-red-600 hover:bg-red-700 text-white" : 
+                      "bg-blue-600 hover:bg-blue-700 text-white"
+                    }
+                    size="lg"
+                    title={isListening ? "Stop listening" : "Start voice input"}
+                  >
+                    {isListening ? (
+                      <MicOff className="w-4 h-4" />
+                    ) : (
+                      <Mic className="w-4 h-4" />
+                    )}
+                  </Button>
                 )}
-              </Button>
+              </div>
 
               {error && (
                 <Alert variant="destructive">
@@ -196,6 +332,39 @@ export default function ReportGeneratorPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Usage Instructions */}
+        <Card className="mt-8 border-blue-200">
+          <CardHeader>
+            <CardTitle className="text-blue-800 flex items-center space-x-2">
+              <Volume2 className="w-5 h-5" />
+              <span>Voice Input Instructions</span>
+            </CardTitle>
+            <CardDescription>How to use the speech-to-text feature effectively</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-blue-700">Getting Started</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Click the microphone icon to start voice input</li>
+                  <li>• Speak clearly and at a normal pace</li>
+                  <li>• The system will automatically transcribe your speech</li>
+                  <li>• Click the microphone again to stop listening</li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-semibold text-blue-700">Tips for Better Results</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Use clear pronunciation for cricket terms</li>
+                  <li>• Pause between different topics or sections</li>
+                  <li>• You can edit the transcribed text before generating</li>
+                  <li>• Combine voice input with typing for best results</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Example Queries */}
         <Card className="mt-8 border-green-200">
