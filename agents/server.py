@@ -13,6 +13,8 @@ import ast
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.responses import FileResponse
 import os
+from report_narration import narrate_cricket_report
+import shutil
 
 app = FastAPI()
 
@@ -155,6 +157,46 @@ def download_docx():
         filename=filename,
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+class SpeechResponse(BaseModel):
+    text: str | None = None
+    error: str | None = None
+
+# Ensure audio directory exists
+AUDIO_DIR = "audio"
+os.makedirs(AUDIO_DIR, exist_ok=True)
+
+class MarkdownInput(BaseModel):
+    content: str  # Markdown content string
+
+@app.post("/generate-narration-audio/")
+async def generate_narration_audio(data: MarkdownInput):
+    try:
+        audio_filename = narrate_cricket_report(data.content)
+        saved_path = os.path.join(AUDIO_DIR, audio_filename)
+
+        # Move generated file to audio folder
+        if os.path.exists(audio_filename):
+            shutil.move(audio_filename, saved_path)
+        else:
+            raise FileNotFoundError("Audio file not generated.")
+
+        # Return downloadable/streamable link
+        return {
+            "audio_url": f"/audio/{audio_filename}",
+            "filename": audio_filename
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Serve audio files from the /audio/ path
+@app.get("/audio/{filename}", response_class=FileResponse)
+async def serve_audio_file(filename: str):
+    file_path = os.path.join(AUDIO_DIR, filename)
+    if os.path.exists(file_path):
+        return FileResponse(file_path, media_type="audio/mpeg", filename=filename)
+    raise HTTPException(status_code=404, detail="Audio file not found.")
 
 if __name__ == "__main__":
     import uvicorn
