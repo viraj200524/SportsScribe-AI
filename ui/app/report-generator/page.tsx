@@ -11,6 +11,7 @@ import { generateReport, downloadReport } from "@/lib/api"
 import ReactMarkdown from "react-markdown"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism"
+import remarkGfm from "remark-gfm"
 
 // Function to extract Markdown content from HTML
 const extractMarkdownFromHtml = (html: string): string => {
@@ -27,35 +28,7 @@ const extractMarkdownFromHtml = (html: string): string => {
 export default function ReportGeneratorPage() {
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [markdownContent, setMarkdownContent] = useState(`# Cricket Match Report: India vs Australia
-
-## Match Summary
-The thrilling encounter between India and Australia at the Melbourne Cricket Ground showcased exceptional cricket from both sides. India's batting lineup displayed remarkable resilience, with Virat Kohli leading from the front with a masterful century.
-
-## Key Highlights
-- **Virat Kohli**: 124 not out (142 balls, 8 fours, 2 sixes)
-- **Rohit Sharma**: 87 (98 balls, 9 fours, 1 six)
-- **Jasprit Bumrah**: 4/35 (10 overs)
-- **Pat Cummins**: 3/42 (12 overs)
-
-## Match Turning Points
-1. Kohli's partnership with Rohit Sharma (156 runs for 2nd wicket)
-2. Bumrah's devastating spell in the 15th over
-3. The final over thriller that decided the match
-
-## Player Performances
-### Indian Team
-- Excellent batting display in the middle overs
-- Bowling attack was disciplined and effective
-- Fielding was sharp with crucial catches taken
-
-### Australian Team
-- Strong bowling performance from Cummins
-- Middle order collapse cost them the match
-- Fielding lapses at crucial moments
-
-## Conclusion
-This match will be remembered as one of the finest displays of cricket, with both teams showing exceptional skill and determination. India's victory was well-deserved, built on solid partnerships and clinical bowling performances.`)
+  const [markdownContent, setMarkdownContent] = useState("")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   
@@ -429,6 +402,7 @@ This match will be remembered as one of the finest displays of cricket, with bot
                 <div className="space-y-4">
                   <div className="report-preview bg-white rounded-lg p-6 border border-green-200 max-h-96 overflow-y-auto">
                     <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
                       components={{
                         code({ node, inline, className, children, ...props }) {
                           const match = /language-(\w+)/.exec(className || "")

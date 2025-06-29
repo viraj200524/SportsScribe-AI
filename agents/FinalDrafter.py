@@ -21,7 +21,7 @@ if not google_api_key:
 if not tavily_api_key:
     raise ValueError("TAVILY_API_KEY not found in environment variables.")
 
-llm = Gemini(id=os.getenv("GOOGLE_MODEL"), api_key=google_api_key)
+llm = Gemini(id=os.getenv("GOOGLE_MODEL2"), api_key=google_api_key)
 
 model = HuggingFace(
     "mistralai/Mixtral-8x7B-Instruct-v0.1", 

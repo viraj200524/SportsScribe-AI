@@ -22,7 +22,7 @@ google_api_key = os.getenv("GOOGLE_API_KEY")
 if not google_api_key:
     raise ValueError("GOOGLE_API_KEY not found in environment variables.")
 
-llm = Gemini(id=os.getenv("GOOGLE_MODEL"), api_key=google_api_key)
+llm = Gemini(id=os.getenv("GOOGLE_MODEL1"), api_key=google_api_key)
 
 # Enhanced Sports Journalist Team
 SportsJournalistTeam = Team(

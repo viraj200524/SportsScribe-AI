@@ -140,7 +140,7 @@ class CricketPlayerTool(Toolkit):
 
 cricket_player_agent = Agent(
     name="Cricket Player Data Fetcher",
-    model=Gemini(id=os.getenv("GOOGLE_MODEL"), api_key=google_api_key),
+    model=Gemini(id=os.getenv("GOOGLE_MODEL1"), api_key=google_api_key),
     role="Cricket Player Data Specialist",
     description=(
         "An agent designed to fetch raw JSON data for cricket players using a provided player ID. "
@@ -151,7 +151,7 @@ cricket_player_agent = Agent(
         Your role is to fetch raw JSON data for cricket players based on the playerID provided by the user, using the CricketPlayerTool toolkit.
 
         Available tools in CricketPlayerTool:
-        1. **get_player_batting_stats(playerID: int)**: Retrieves batting statistics across formats (Test, ODI, T20, IPL).
+        1. **get_player_batting_stats(playerID: int)**: Retrieves batting statistics across formats.
         2. **get_player_bowling_stats(playerID: int)**: Fetches bowling statistics across formats.
         3. **get_player_info(playerID: int)**: Obtains profile details such as name, date of birth, role, batting style, and bowling style.
         4. **get_player_career_info(playerID: int)**: Retrieves career details including teams, debut matches, and last matches.
@@ -159,7 +159,7 @@ cricket_player_agent = Agent(
         Response requirements:
         - Call only the tool(s) specified by the user's request (e.g., batting stats, bowling stats, profile, or career info).
         - Do not call any tool that is not relevant to the user's request.
-        - Return the raw JSON data as received from the API, formatted with proper indentation for readability using json.dumps with an indent of 2.
+        - Return the raw JSON data as received from the API.
         - You can use the ReasontingTools to reason about ambiguios user requests and determine the most suitable tool to call.
         - Do NOT analyze, summarize, or provide explanations of the data.
         - If the user specifies a particular type of data (e.g., "get batting stats for playerID 123"), use only the corresponding tool.

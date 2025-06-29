@@ -54,7 +54,7 @@ def narrate_cricket_report(markdown_report):
     plain_text = plain_text.replace("\n", " ")
     
     prompt = f"""
-    You are an expert in creating dynamic and engaging narrative speech for cricket reports on player(s) or match(es), with a focus on embodying the vibrant sports spirit. I have provided a markdown file containing a cricket match report or player(s) performance details report. Your task is to:
+    You are an expert in creating dynamic and engaging narrative speech for cricket reports on player(s) or match(es) or both, with a focus on embodying the vibrant sports spirit. I have provided a markdown file containing a cricket match report or player(s) performance details report. Your task is to:
 
     Analyze the markdown file and extract key details such as the match outcome, key moments, player performances, scores, and any notable events.
     Convert the extracted information into a concise, high-energy, and conversational narrative speech suitable for a voice agent to deliver. The speech should:

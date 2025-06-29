@@ -17,7 +17,7 @@ if not google_api_key:
 if not tavily_api_key:
     raise ValueError("TAVILY_API_KEY not found in environment variables.")
 
-llm = Gemini(id=os.getenv("GOOGLE_MODEL"), api_key=google_api_key)
+llm = Gemini(id=os.getenv("GOOGLE_MODEL1"), api_key=google_api_key)
 
 # Enhanced Web Search Agent
 Web_Search_Agent = Agent(

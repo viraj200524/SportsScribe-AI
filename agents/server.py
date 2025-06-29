@@ -83,13 +83,14 @@ async def get_batting(request: ReportRequest):
                         Response of the ID finding agent: {id_response.content}"""
 
         agent_response = player_agent.run(message=agent_prompt)
+        print(agent_response.content)  # Debugging line
         cleaned = agent_response.content.strip("`").split("\n", 1)[-1].rsplit("\n", 1)[0].replace("'",'"')
         print(f"agent_response.content: {cleaned}")  # Debugging line
         if isinstance(cleaned, str):
             outer_json = json.loads(cleaned)  
         else:
             outer_json = cleaned  
-        result_str = outer_json.get("get_player_batting_stats_response", {}).get("result")
+        result_str = outer_json.get("batting_stats", {})
         if not result_str:
             return JSONResponse(
                 content={"error": "No 'result' field found in response"},
