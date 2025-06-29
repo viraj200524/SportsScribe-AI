@@ -207,9 +207,9 @@ This match will be remembered as one of the finest displays of cricket, with bot
       console.log('Audio response:', data) // Debug log
       
       // Construct full URL if needed
-      const fullAudioUrl = data.audio_url.startsWith('http') 
-        ? data.audio_url 
-        : `${window.location.origin}${data.audio_url}`
+      const fullAudioUrl = data.audio_url
+
+      console.log('Full audio URL:', fullAudioUrl) // Debug log
       
       setAudioUrl(fullAudioUrl)
       setAudioFilename(data.filename)
@@ -222,27 +222,33 @@ This match will be remembered as one of the finest displays of cricket, with bot
     }
   }
 
-  const handlePlayPause = () => {
-    if (!audioRef.current || !audioUrl) {
-      setAudioError("Audio not available")
-      return
-    }
-
-    console.log('Attempting to play audio:', audioUrl) // Debug log
-
-    if (isPlaying) {
-      audioRef.current.pause()
-      setIsPlaying(false)
-    } else {
-      // Test if audio can be loaded
-      audioRef.current.load() // Force reload the audio
-      audioRef.current.play().catch(error => {
-        console.error('Audio play error:', error)
-        setAudioError(`Failed to play audio: ${error.message}`)
-        setIsPlaying(false)
-      })
-    }
+  useEffect(() => {
+  if (audioRef.current && audioUrl) {
+    audioRef.current.load()
   }
+}, [audioUrl])
+
+
+  const handlePlayPause = () => {
+  if (!audioRef.current || !audioUrl) {
+    setAudioError("Audio not available")
+    return
+  }
+
+  // Only try to play if src is set and audio can be loaded
+  if (isPlaying) {
+    audioRef.current.pause()
+    setIsPlaying(false)
+  } else {
+    audioRef.current.play().then(() => {
+      setIsPlaying(true)
+    }).catch(error => {
+      setAudioError(`Failed to play audio: ${error.message}`)
+      setIsPlaying(false)
+    })
+  }
+}
+
 
   const handleDownloadAudio = async () => {
     if (!audioFilename) return
@@ -507,7 +513,7 @@ This match will be remembered as one of the finest displays of cricket, with bot
                           <div className="flex-1">
                             <audio
                               ref={audioRef}
-                              src={audioUrl}
+                              src={"http://localhost:8000"+audioUrl || undefined}
                               className="w-full"
                               controls
                               onPlay={() => setIsPlaying(true)}

@@ -15,6 +15,7 @@ from fastapi.responses import FileResponse
 import os
 from report_narration import narrate_cricket_report
 import shutil
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -197,6 +198,14 @@ async def serve_audio_file(filename: str):
     if os.path.exists(file_path):
         return FileResponse(file_path, media_type="audio/mp3", filename=filename)
     raise HTTPException(status_code=404, detail="Audio file not found.")
+
+# Path to your audio directory
+audio_dir = os.path.join(os.path.dirname(__file__), "audio")
+
+print(audio_dir)
+
+# Serve audio files at `/audio/...`
+app.mount("/audio", StaticFiles(directory=audio_dir), name="audio")
 
 if __name__ == "__main__":
     import uvicorn
