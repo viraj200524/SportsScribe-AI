@@ -11,7 +11,6 @@ export function Navbar() {
   const navItems = [
     { href: "/", label: "Home", icon: Activity },
     { href: "/report-generator", label: "Report Generator", icon: FileText },
-    { href: "/player-stats", label: "Player Stats", icon: BarChart3 },
   ]
 
   return (

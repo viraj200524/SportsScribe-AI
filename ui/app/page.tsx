@@ -32,12 +32,6 @@ export default function HomePage() {
               </Link>
             </Button>
 
-            <Button asChild variant="outline" size="lg" className="border-green-600 text-green-600 hover:bg-green-50">
-              <Link href="/player-stats" className="flex items-center space-x-2">
-                <BarChart3 className="w-5 h-5" />
-                <span>View Player Stats</span>
-              </Link>
-            </Button>
           </div>
         </div>
       </section>
@@ -79,19 +73,20 @@ export default function HomePage() {
                     <BarChart3 className="w-6 h-6 text-red-600" />
                   </div>
                 </div>
-                <CardTitle className="text-green-800">Player Statistics</CardTitle>
+                <CardTitle className="text-green-800">Sporty Narrative Voiceover</CardTitle>
                 <CardDescription>
-                  Comprehensive batting and bowling statistics across all cricket formats
+                  High-energy, commentary-style voiceover for cricket match reports.
                 </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>• Test, ODI, T20, IPL stats</li>
-                  <li>• Interactive dashboards</li>
-                  <li>• Visual data representation</li>
-                  <li>• Career performance tracking</li>
-                </ul>
-              </CardContent>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li>• Converts reports into dynamic, match-like narration</li>
+                    <li>• Adds excitement to Test, ODI, T20, and IPL updates</li>
+                    <li>• Perfect for podcasts, reels, and automated voiceovers</li>
+                    <li>• Highlights turning points and player performances</li>
+                  </ul>
+                </CardContent>
+
             </Card>
 
             <Card className="border-green-200 hover:shadow-lg transition-shadow">
@@ -109,7 +104,7 @@ export default function HomePage() {
                   <li>• DOCX report downloads</li>
                   <li>• Professional formatting</li>
                   <li>• Ready for publication</li>
-                  <li>• Multiple export options</li>
+                  <li>• Audio Report Download</li>
                 </ul>
               </CardContent>
             </Card>
