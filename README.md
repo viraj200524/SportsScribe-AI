@@ -151,7 +151,7 @@ GOOGLE_MODEL2 = <GOOGLE_LLM_MODEL_OF_YOUR CHOICE>
         <img src="https://img.shields.io/badge/groq-FF6F00?style=for-the-badge" alt="GROQ" />
         <img src="https://img.shields.io/badge/gemini-4285F4?style=for-the-badge" alt="Gemini" />
         <img src="https://img.shields.io/badge/python--docx-3776AB?style=for-the-badge" alt="python-docx" />
-        <img src="https://img.shields.io/badge/pyttsx3-4B8BBE?style=for-the-badge" alt="edge-tts" />
+        <img src="https://img.shields.io/badge/edge_tts-4B8BBE?style=for-the-badge" alt="edge_tts" />
         <img src="https://img.shields.io/badge/markdown2-000000?style=for-the-badge" alt="markdown2" />
         <img src="https://img.shields.io/badge/tailwindcss-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
         <img src="https://img.shields.io/badge/shadcn--ui-111827?style=for-the-badge" alt="shadcn-ui" />
