@@ -28,7 +28,50 @@ const extractMarkdownFromHtml = (html: string): string => {
 export default function ReportGeneratorPage() {
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [markdownContent, setMarkdownContent] = useState(``)
+  const [markdownContent, setMarkdownContent] = useState(`
+    # Hardik Pandya: A Statistical Overview
+
+**Date:** 2025-06-22 11:39:36.834216
+
+### Introduction
+
+Hardik Pandya, an Indian all-rounder, has established himself as a dynamic force in international cricket. Known for his aggressive batting and effective seam bowling, Pandya has become a crucial asset for his teams, particularly in limited-overs formats. This report provides a comprehensive overview of his batting and bowling statistics, along with career highlights and general information.
+
+### General Information
+
+*   **Full Name:** Hardik Himanshu Pandya
+*   **Current Team:** Mumbai Indians (Captain)
+*   **Role:** All-rounder (Right-arm fast-medium bowler, Right-handed Batsman)
+*   **Also Represents:** Baroda
+
+### Career Highlights
+
+*   Played a vital role in helping Baroda win the Syed Mushtaq Ali Trophy in the 2013–14 season.
+*   Key in Mumbai Indians' IPL title wins in 2019 and 2022.
+*   Best bowling figures in T20Is: 4/38.
+*   First Indian to take 4 wickets and score over 30 runs in the same T20I match.
+
+### Batting Statistics
+
+| Format | Matches | Innings | Runs  | Highest Score | Average | Strike Rate | 100s | 50s | 4s  | 6s  |
+| :----- | :------ | :------ | :---- | :------------ | :------ | :---------- | :--- | :-- | :-- | :-- |
+| Test   | 11      | 18      | 532   | 108           | 31.29   | 73.89       | 1    | 4   | 68  | 12  |
+| ODI    | 94      | 68      | 1904  | 92            | 32.83   | 110.90      | 0    | 11  | 141 | 76  |
+| T20    | 114     | 90      | 1812  | 71            | 27.88   | 141.68      | 0    | 5   | 135 | 95  |
+| IPL    | 152     | 140     | 2749  | 91            | 28.34   | 146.93      | 0    | 10  | 207 | 148 |
+
+### Bowling Statistics
+
+| Format | Matches | Innings | Wickets | Average | Economy | Strike Rate | Best Bowling | 4 Wickets | 5 Wickets |
+| :----- | :------ | :------ | :------ | :------ | :------- | :---------- | :----------- | :-------- | :-------- |
+| Test   | 11      | 19      | 17      | 31.06   | 3.38     | 55.12       | 5/28         | 0         | 1         |
+| ODI    | 94      | 88      | 91      | 35.51   | 5.60     | 38.02       | 4/24         | 1         | 0         |
+| T20    | 114     | 102     | 94      | 26.44   | 8.21     | 19.33       | 4/16         | 3         | 0         |
+| IPL    | 152     | 107     | 78      | 31.95   | 9.18     | 20.87       | 5/36         | 0         | 1         |
+
+### Conclusion
+
+Hardik Pandya's career is marked by significant contributions in both batting and bowling, making him a valuable asset in all formats of the game. His ability to score quick runs and take crucial wickets has solidified his place as a key player for both India and his IPL teams. His leadership qualities, as demonstrated by his captaincy roles, further enhance his overall impact on the sport.`)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   

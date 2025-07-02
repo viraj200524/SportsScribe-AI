@@ -100,7 +100,7 @@ class MarkdownInput(BaseModel):
 @app.post("/generate-narration-audio")
 async def generate_narration_audio(data: MarkdownInput):
     try:
-        audio_filename = narrate_cricket_report(data.content)
+        audio_filename = await narrate_cricket_report(data.content)
         saved_path = os.path.join(AUDIO_DIR, audio_filename)
 
         # Move generated file to audio folder

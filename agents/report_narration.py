@@ -37,7 +37,7 @@ async def generate_edge_tts(text, voice, output_file, rate="+15%"):
     communicate = edge_tts.Communicate(text, voice, rate=rate,pitch="-8Hz", volume="+20%")
     await communicate.save(output_file)
 
-def narrate_cricket_report(markdown_report):
+async def narrate_cricket_report(markdown_report):
     load_dotenv()
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")
     if not GROQ_API_KEY:
@@ -88,7 +88,7 @@ Here is the markdown content to convert into your electric narration speech:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     audio_filename = f"cricket_narration_{timestamp}.mp3"
 
-    asyncio.run(generate_edge_tts(narration, voice, audio_filename))
+    await generate_edge_tts(narration, voice, audio_filename)
     return audio_filename
 
 if __name__ == "__main__":
