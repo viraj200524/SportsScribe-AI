@@ -33,8 +33,8 @@ def read_markdown_file(filepath):
         raise IOError(f"Error reading file {filepath}: {e}")
 
 
-async def generate_edge_tts(text, voice, output_file, rate="+20%"):
-    communicate = edge_tts.Communicate(text, voice, rate=rate,pitch="-8Hz")
+async def generate_edge_tts(text, voice, output_file, rate="+15%"):
+    communicate = edge_tts.Communicate(text, voice, rate=rate,pitch="-8Hz", volume="+20%")
     await communicate.save(output_file)
 
 def narrate_cricket_report(markdown_report):
@@ -66,7 +66,7 @@ You are a master of high-octane, emotionally-charged narrative speech tailored f
 - The voiceover will be delivered in an **American accent**. Therefore, ensure all **Indian names (e.g., Virat Kohli, Rohit Sharma) and cricket-specific Indian terms** are written in a way that **sounds natural and respectful in an American accent**, while retaining their **Indian identity and essence**. Spell or format names phonetically if needed to guide correct Americanized pronunciation without distorting their meaning or cultural significance.
 
 **Duration & Format:**
-- Length should suit a **1-2 minute voiceover** (unless specified otherwise).
+- Length should suit a **1-2 or 2-3 minute voiceover** (unless specified otherwise).
 - Do not include any markdown syntax. Output the narrative as **plain text**, polished and ready for use in a voice agent or speech system.
 
 **Deliver with impact**: The listener should feel the roar of the crowd, the pulse of the final over, the thrill of a boundary, and the pride of a match-winning spell. Make them feel like they were *right there*.
@@ -88,10 +88,10 @@ Here is the markdown content to convert into your electric narration speech:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     audio_filename = f"cricket_narration_{timestamp}.mp3"
 
-    asyncio.run(generate_edge_tts(narration, voice, audio_filename, rate="+20%"))
+    asyncio.run(generate_edge_tts(narration, voice, audio_filename))
     return audio_filename
 
 if __name__ == "__main__":
-    markdown_content = read_markdown_file("../reports/IPL 2025 Finals RCB vs PBKS.md")
+    markdown_content = read_markdown_file("../reports/Jasprit_Bumrah_Bowling_Report.md")
     audio_file = narrate_cricket_report(markdown_content)
     print(audio_file)

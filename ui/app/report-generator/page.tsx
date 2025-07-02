@@ -28,7 +28,7 @@ const extractMarkdownFromHtml = (html: string): string => {
 export default function ReportGeneratorPage() {
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [markdownContent, setMarkdownContent] = useState("")
+  const [markdownContent, setMarkdownContent] = useState(``)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   

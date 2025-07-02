@@ -4,6 +4,16 @@ SportsScribe-AI is an advanced AI-powered platform designed to revolutionize cri
 
 ---
 
+## Web Interface
+
+![Alt text](./images/1.png)
+
+![Alt text](./images/2.png)
+
+![Alt text](./images/3.png)
+
+---
+
 ## 🚀 Key Features
 
 ### 🏏 AI-Powered Cricket Report Generation
@@ -25,6 +35,13 @@ SportsScribe-AI is an advanced AI-powered platform designed to revolutionize cri
 - Intuitive UI for generating, previewing, and downloading reports and audio.
 
 ---
+
+## Some Sample Reports along with the query and their Audio narration
+
+- [Career of KL Rahul](./Results/KL%20RAHUL/)
+- [Bowling Of Jasprit Bumrah](./Results/Jasprit%20Bumrah/)
+- [Top 5 Indian Bowlers Comparision](./Results/Top%20Indian%20Bowler/)
+- [Top 5 Indian Batsmen Comparision](./Results/Top%20Indian%20Batsmen/)
 
 ## 🗂️ Project Structure
 
@@ -72,17 +89,35 @@ pip install -r requirements.txt
 cd agents
 python server.py
 ```
-API runs at `http://127.0.0.1:8000`
+Backend runs at `http://127.0.0.1:8000`
 
 ### 2. Frontend Setup (Next.js)
 
 ```sh
 cd ui
-npm install
+npm install --legacy-peer-deps
 npm run dev
 ```
 Frontend runs at `http://localhost:3000`
 
+### 3. Set up the enviornment Variables
+- Create a .env file in the root directory
+
+```
+GROQ_API_KEY= <YOUR_GROQ_API_KEY> 
+GOOGLE_API_KEY= <YOUR_GEMINI_API_KEY>
+TAVILY_API_KEY= <YOUR_TAVILY_API_KEY>
+X-RAPID-API-KEY= <YOUR_X_RAPID_API_KEY>
+X-RAPID-API-HOST= <YOUR_X_RAPID_API_HOST>
+GOOGLE_MODEL1= <GOOGLE_LLM_MODEL_OF_YOUR CHOICE>
+GOOGLE_MODEL2 = <GOOGLE_LLM_MODEL_OF_YOUR CHOICE>
+```
+
+- [Get Your Groq API Key](https://console.groq.com/docs/overview)
+- [Get Your Google API Key](https://console.cloud.google.com/)
+- [Get Your Tavily API Key](https://tavily.com/)
+- [Get Your X-Rapid API Key and HOST](https://rapidapi.com/cricketapilive/api/cricbuzz-cricket)
+- [Get Your Google LLM Model](https://ai.google.dev/gemini-api/docs/models)
 ---
 
 ## 🛠️ Tech Stack
@@ -128,15 +163,5 @@ Frontend runs at `http://localhost:3000`
 
 ## Multi Agent Architecture of SportsScribe-AI
 
-![Alt text](./Multi%20agent%20architecture.jpg)
+![Alt text](./images/Multi%20agent%20architecture.jpg)
 
----
-
-## 🙏 Acknowledgements
-
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [Next.js](https://nextjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [GROQ](https://groq.com/)
-- [Gemini](https://deepmind.google/technologies/gemini/)
-- [AGNO Framework](https://docs.agno.com/introduction)
