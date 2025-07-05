@@ -163,5 +163,5 @@ GOOGLE_MODEL2 = <GOOGLE_LLM_MODEL_OF_YOUR CHOICE>
 
 ## Multi Agent Architecture of SportsScribe-AI
 
-![Alt text](./images/Multi%20agent%20architecture.jpg)
+![Alt text](./images/Multi-Agent-Architecture.jpg)
 
